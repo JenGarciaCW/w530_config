@@ -1,0 +1,285 @@
+Debian: Jessie
+
+===============================================================
+		Cross-Opencv
+===============================================================
+
+ACTION: instalar sudo
+#apt-get install sudo
+#visudo 
+ACTION: Agregar user_name   ALL=(ALL:ALL) ALL
+
+ACTION: Instalar compilador
+$ sudo apt-get install build-essential 
+
+ACTION: Agregar repositorio cross compilador
+$ cd /etc/apt/sources.list.d/
+$ ls -l
+$ sudo nano crosstools.list
+ACTION: Agregar 	
+	deb http://emdebian.org/tools/debian jessie main
+
+ACTION: Actualizar llaves
+$ sudo apt-get install curl
+$ curl http://emdebian.org/tools/debian/emdebian-toolchain-archive.key | sudo apt-key add -
+
+ACTION: Instalar cross-compilador
+$ sudo apt-get update 
+$ sudo dpkg --add-architecture armhf
+$ sudo apt-get install crossbuild-essential-armhf 
+
+ACTION: Instalar prerequisitos opencv
+$ sudo apt-get install build-essential
+$ sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+$ sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+
+ACTION: Descargar opencv
+$ git clone https://github.com/Itseez/opencv.git
+$ cd opencv/platforms/linux/
+ACTION: Editar arm-gnueabi.toolchain.cmake y cambiar versión a 4.9
+
+ACTION: Compilar e instalar opencv
+$ mkdir -p build_hardfp
+$ cd build_hardfp
+$ cmake -DCMAKE_TOOLCHAIN_FILE=../arm-gnueabi.toolchain.cmake ../../..
+$ make
+$ sudo make install
+
+===============================================================
+ 		Actualizar Repositorios
+===============================================================
+
+ACTION: Añadir a /etc/apt/sources.list
+
+# jessie-oficiales
+deb http://mirrors.kernel.org/debian/ jessie main contrib non-free
+deb-src http://mirrors.kernel.org/debian/ jessie main contrib non-free
+
+# jessie-actualizaciones-sistema
+deb http://mirrors.kernel.org/debian/ jessie-updates main contrib non-free
+deb-src http://mirrors.kernel.org/debian/ jessie-updates main contrib non-free
+deb http://mirrors.kernel.org/debian jessie-proposed-updates main contrib non-free
+deb-src http://mirrors.kernel.org/debian jessie-proposed-updates main contrib non-free
+
+# jessie-backports
+deb http://mirrors.kernel.org/debian/ jessie-backports main contrib non-free
+deb-src http://mirrors.kernel.org/debian/ jessie-backports main contrib non-free
+
+# deb-multimedia
+# apt-get install deb-multimedia-keyring
+deb http://www.deb-multimedia.org jessie main non-free
+
+ACTION: Actualizar lista de repositorios
+# apt-get update
+
+ACTION: Actualizar llaves
+# apt-get install deb-multimedia-keyring
+
+ACTION: Actualizar lista de repositorios
+# apt-get update
+
+================================================================
+			Drivers Nvidia
+================================================================
+ACTION: Instalar headers del kernel
+# aptitude -r install linux-headers-$(uname -r|sed 's,[^-]*-[^-]*-,,')
+
+ACTION: Instalar detector de GPU
+# aptitude install nvidia-detect
+# nvidia-detect
+
+ACTION: Instalar driver
+#  aptitude -r install nvidia-kernel-dkms
+
+ACTION: Configurar xserver
+# mkdir /etc/X11/xorg.conf.d
+# echo -e 'Section "Device"\n\tIdentifier "My GPU"\n\tDriver "nvidia"\nEndSection' > /etc/X11/xorg.conf.d/20-nvidia.conf
+
+ACTION: Reiniciar
+# reboot
+
+ACTION: Archivo de configuración xserver 
+# apt-get install nvidia-xconfig
+# nvidia-xconfig 
+
+ACTION: Modificar GRUB para iniciar driver Nvidia
+ACTION: Modificar archivo /etc/default/grub
+Modificar GRUB_CMDLINE_LINUX="nox2apic rcutree.rcu_idle_gp_delay=1"
+Comentar  GRUB_GFXMODE=1920x1080x32
+Comentar  GRUB_GFXPAYLOAD_LINUX=1920x1080x32
+# update-grub
+# reboot
+
+================================================================
+			Wifi y trackpoint
+================================================================
+
+ACTION: Instalar firmware wifi
+# apt-get update && apt-get install firmware-iwlwifi
+
+ACTION: Crear archivo /usr/share/X11/xorg.conf.d/20-thinkpad.conf
+
+ Section "InputClass"
+     Identifier "Trackpoint Wheel Emulation"
+     MatchProduct       "TPPS/2 IBM TrackPoint|DualPoint Stick|Synaptics Inc. Composite TouchPad / TrackPoint|ThinkPad USB Keyboard with TrackPoint|ThinkPad Compact USB Keyboard with TrackPoint|USB Trackpoint pointing device"
+     MatchDevicePath    "/dev/input/event*"
+     Option             "EmulateWheel"          "true"
+     Option             "EmulateWheelButton"    "2"
+     Option             "Emulate3Buttons"       "false"
+     Option             "XAxisMapping"          "6 7"
+     Option             "YAxisMapping"          "4 5"
+ EndSection
+
+================================================================
+				i3-wm
+================================================================
+
+ACTION: instalar i3
+# apt-get instal i3
+
+================================================================
+			Eclipse last
+================================================================
+
+ACTION: Descargar última versión de eclipse
+ACTION: Descomprimir archivo 
+# cd Downloads/
+# tar xf eclipse*.tar.gz
+
+ACTION: Mover y crear link simbólico
+# mv eclipse /opt
+# ln -s /opt/eclipse/eclipse /usr/local/bin/eclipse
+
+================================================================
+			Devices
+================================================================
+ACTION: Instalar Joystick
+# apt-get install joystick
+
+ACTION: Instalar controlador cámara REFLEX
+# apt-get install gphoto2
+
+ACTION: Instalar video 4 linux
+# apt-get install v4l-utils
+
+ACTION: nVIDIA cuda
+# apt-get install nvidia-cuda-toolkit
+
+ACTION: Configurar DPI monitor
+ACTION: Editar /etc/X11/xorg.conf y agregar en la sección
+"Monitor" 
+	Option         "DPI" "90x90"
+
+ACTION: Control de brillo
+# sudo apt-get install xbacklight
+
+ACTION: Emulador ARM
+$ sudo apt-get install qemu-user-static 
+
+================================================================
+			i3
+================================================================
+
+ACTION: Script problemas firmware
++crear firmscript.sh : echo reset > /proc/acpi/ibm/hotkey 
+# mv firmscript.sh /opt
+# ln -s /opt/firmscript.sh /usr/local/bin/firmscript
+
+ACTION: Agregar comando a /etc/rc.local
+# chmod 777 /proc/acpi/ibm/hotkey
+
+ACTION: Crear archivo de configuración
+# i3-config-wizard
+
+ACTION: Habilitar teclas especiales añadiendo a ~/.i3/config
+
+#Thinkpad
+bindsym XF86AudioRaiseVolume exec amixer -q sset Master 5%+ unmute
+bindsym XF86AudioLowerVolume  exec amixer -q sset Master 5%- unmute
+bindsym XF86AudioMute exec amixer -q sset Master toggle
+
+# Sreen brightness controls
+bindsym XF86MonBrightnessUp exec xbacklight -inc 20 # increase screen brightness
+bindsym XF86MonBrightnessDown exec xbacklight -dec 20 # decrease screen brightness
+
+# PrintScreen
+bindsym Print exec xfce4-screenshooter -f -s /home/kevin/temp/
+
+# Thunar
+bindsym XF86Launch1 exec thunar
+
+# Eclipse
+bindsym XF86AudioMute exec eclipse
+
+# nm-applet
+exec nm-applet
+
+# firmware correction
+exec firmscript
+
+================================================================
+			Eclipse Config
+================================================================
+ACTION: Crear un proyecto nuevo en eclipse, de tipo cross linux
+agregar al final de la configuración el prefijo
+	arm-linux-gnueabi-
+y en cross compiler path
+	/usr/bin 
+
+ACTION: Ir a Help>Install New Software y seleccionar el Release
+de eclipse, ir a General Prupose Tools e instalar Remote 
+System Explorer y Remote System Shell.
+
+ACTION: Ir a Window>Show view> other> y seleccionar Remote 
+Systems
+
+ACTION: Agregar conexión con ssh y shell configurations
+
+ACTION: Ir a Help>Install new software y agregar
+	EGIT - http://download.eclipse.org/egit/updates
+	Instalar todos los paquetes
+
+ACTION: Ir a Window>Show view> other> y seleccionar Git Repos
+ACTION: Clone Git Repository https://github.com/KevinArias/Enjambre_Kernel.git
+
+
+
+
+================================================================
+			OpenCV
+================================================================
+			python
+================================================================
+			Atom
+================================================================
+			Freecad
+================================================================
+			Arduino
+================================================================
+			Code Composer
+================================================================
+			Kicad
+================================================================
+			CUDA
+================================================================
+			ROS
+================================================================
+			jenkins
+================================================================
+			background grub
+================================================================
+			nodejs
+================================================================
+			Energia
+================================================================
+			LaTex
+================================================================
+			Octave
+================================================================
+
+
+	
+	
+
+
+$sudo ldconfig
