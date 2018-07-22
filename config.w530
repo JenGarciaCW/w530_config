@@ -32,6 +32,9 @@ Debian: Stretch
 <https://wiki.debian.org/es/NvidiaGraphicsDrivers#Debian_9_.22Stretch.22-1>
 # apt-get install nvidia-cuda-dev nvidia-cuda-toolkit  nvidia-driver
 
+*I'm not able to build examples!
+Example:
+https://devblogs.nvidia.com/easy-introduction-cuda-c-and-c/
 
 ===============================================================
 		sudo
@@ -41,12 +44,8 @@ ACTION: instalar sudo
 #visudo 
 ACTION: Agregar user_name   ALL=(ALL:ALL) ALL
 
-================================================================
-			Kernel headers
-================================================================
-sudo apt-get install aptitude
-ACTION: Instalar headers del kernel
-# aptitude -r install linux-headers-$(uname -r|sed 's,[^-]*-[^-]*-,,')
+
+
 
 ===============================================================
 		Cross-Compilador
@@ -60,15 +59,13 @@ $ sudo apt-get update
 $ sudo dpkg --add-architecture armhf
 $ sudo apt-get install crossbuild-essential-armhf 
 
-Alternative
-sudo dpkg --add-architecture armhf
-sudo apt-get update
-sudo apt-get install cross-gcc-dev
-#Make sure bash (or zsh) is your default shell or add SHELL:=/bin/bash to 2nd line of /usr/share/cross-gcc/template/rules.generic
-TARGET_LIST="armhf" cross-gcc-gensource 4.9
-cd cross-gcc-packages-amd64/cross-gcc-4.9-armhf
-sudo apt-get install debhelper gcc-4.9-source libc6-dev:armhf linux-libc-dev:armhf libgcc1:armhf binutils-arm-linux-gnueabihf bison flex libtool gdb sharutils netbase libcloog-isl-dev libmpc-dev libmpfr-dev libgmp-dev systemtap-sdt-dev autogen expect chrpath zlib1g-dev zip
-dpkg-buildpackage
+================================================================
+				i3-wm
+================================================================
+
+ACTION: instalar i3
+# apt-get instal i3
+
 
 ===============================================================
 		Opencv
@@ -91,32 +88,7 @@ $ make
 $ sudo make install
 
 
-================================================================
-			Drivers Nvidia
-================================================================
-ACTION: Instalar detector de GPU
-# aptitude install nvidia-detect
-# nvidia-detect
 
-ACTION: Instalar driver
-#  aptitude -r install nvidia-kernel-dkms
-
-ACTION: Configurar xserver
-# mkdir /etc/X11/xorg.conf.d
-# echo -e 'Section "Device"\n\tIdentifier "My GPU"\n\tDriver "nvidia"\nEndSection' > /etc/X11/xorg.conf.d/20-nvidia.conf
-
-ACTION: Reiniciar
-# reboot
-
-ACTION: Archivo de configuración xserver 
-# apt-get install nvidia-xconfig
-# nvidia-xconfig 
-
-ACTION: Modificar GRUB para iniciar driver Nvidia
-ACTION: Modificar archivo /etc/default/grub
-Modificar GRUB_CMDLINE_LINUX="nox2apic rcutree.rcu_idle_gp_delay=1"
-Comentar  GRUB_GFXMODE=1920x1080x32
-Comentar  GRUB_GFXPAYLOAD_LINUX=1920x1080x32
 # update-grub
 # reboot
 
@@ -140,12 +112,6 @@ ACTION: Crear archivo /usr/share/X11/xorg.conf.d/20-thinkpad.conf
      Option             "YAxisMapping"          "4 5"
  EndSection
 
-================================================================
-				i3-wm
-================================================================
-
-ACTION: instalar i3
-# apt-get instal i3
 
 ================================================================
 			Eclipse last
