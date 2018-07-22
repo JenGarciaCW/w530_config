@@ -131,9 +131,11 @@ ACTION: Instalar controlador cámara REFLEX
 
 ACTION: Instalar video 4 linux
 # apt-get install v4l-utils
-les	
-ACTION: nVIDIA cuda
-# apt-get install nvidia-cuda-toolkit
+
+# arp-scan (scanning network for devices)
+ sudo apt-get install arp-scan
+ 
+
 
 ACTION: Configurar DPI monitor
 ACTION: Editar /etc/X11/xorg.conf y agregar en la sección
@@ -187,6 +189,8 @@ exec nm-applet
 # firmware correction
 exec firmscript
 
+
+
 ================================================================
 			Eclipse Config
 ================================================================
@@ -213,28 +217,52 @@ ACTION: Ir a Window>Show view> other> y seleccionar Git Repos
 ACTION: Clone Git Repository https://github.com/KevinArias/Enjambre_Kernel.git
 
 
+================================================================
+			Lid suspend PC
+================================================================
+$ sudo nano /etc/systemd/logind.conf 
+	uncomment 	HandleLidSwitch=ignore
+			HandleLidSwitchDocked=ignore
 
+$ sudo systemctl restart systemd-logind.service 
+================================================================
+			jenkins
+================================================================
+https://wiki.jenkins.io/display/JENKINS/Installing+Jenkins+on+Ubuntu
 
-================================================================
-			OpenCV
-================================================================
-			python
-================================================================
-			Atom
 ================================================================
 			Freecad
 ================================================================
+sudo apt-get install freecad 
+
+================================================================
+			Atom
+================================================================
+https://flight-manual.atom.io/getting-started/sections/installing-atom/
+
+================================================================
 			Arduino
 ================================================================
-			Code Composer
+sudo apt-get install arduino
+
 ================================================================
 			Kicad
 ================================================================
-			CUDA
+http://kicad-pcb.org/download/debian/
+
+
+
+
+
+			OpenCV
 ================================================================
-			ROS
+
 ================================================================
-			jenkins
+			Code Composer
+
+
+ROS
+
 ================================================================
 			background grub
 ================================================================
