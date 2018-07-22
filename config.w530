@@ -1,49 +1,11 @@
 Debian: Jessie
-
 ===============================================================
-		Cross-Opencv
+		sudo
 ===============================================================
-
 ACTION: instalar sudo
 #apt-get install sudo
 #visudo 
 ACTION: Agregar user_name   ALL=(ALL:ALL) ALL
-
-ACTION: Instalar compilador
-$ sudo apt-get install build-essential 
-
-ACTION: Agregar repositorio cross compilador
-$ cd /etc/apt/sources.list.d/
-$ ls -l
-$ sudo nano crosstools.list
-ACTION: Agregar 	
-	deb http://emdebian.org/tools/debian jessie main
-
-ACTION: Actualizar llaves
-$ sudo apt-get install curl
-$ curl http://emdebian.org/tools/debian/emdebian-toolchain-archive.key | sudo apt-key add -
-
-ACTION: Instalar cross-compilador
-$ sudo apt-get update 
-$ sudo dpkg --add-architecture armhf
-$ sudo apt-get install crossbuild-essential-armhf 
-
-ACTION: Instalar prerequisitos opencv
-$ sudo apt-get install build-essential
-$ sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
-$ sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
-
-ACTION: Descargar opencv
-$ git clone https://github.com/Itseez/opencv.git
-$ cd opencv/platforms/linux/
-ACTION: Editar arm-gnueabi.toolchain.cmake y cambiar versión a 4.9
-
-ACTION: Compilar e instalar opencv
-$ mkdir -p build_hardfp
-$ cd build_hardfp
-$ cmake -DCMAKE_TOOLCHAIN_FILE=../arm-gnueabi.toolchain.cmake ../../..
-$ make
-$ sudo make install
 
 ===============================================================
  		Actualizar Repositorios
@@ -79,11 +41,65 @@ ACTION: Actualizar lista de repositorios
 # apt-get update
 
 ================================================================
-			Drivers Nvidia
+			Kernel headers
 ================================================================
 ACTION: Instalar headers del kernel
 # aptitude -r install linux-headers-$(uname -r|sed 's,[^-]*-[^-]*-,,')
 
+===============================================================
+		Cross-Opencv
+===============================================================
+
+ACTION: Instalar compilador
+$ sudo apt-get install build-essential 
+
+ACTION: Agregar repositorio cross compilador
+$ cd /etc/apt/sources.list.d/
+$ ls -l
+$ sudo nano crosstools.list
+ACTION: Agregar 	
+	deb http://emdebian.org/tools/debian jessie main
+
+ACTION: Actualizar llaves
+$ sudo apt-get install curl
+$ curl http://emdebian.org/tools/debian/emdebian-toolchain-archive.key | sudo apt-key add -
+
+ACTION: Instalar cross-compilador
+$ sudo apt-get update 
+$ sudo dpkg --add-architecture armhf
+$ sudo apt-get install crossbuild-essential-armhf 
+
+Alternative
+sudo dpkg --add-architecture armhf
+sudo apt-get update
+sudo apt-get install cross-gcc-dev
+#Make sure bash (or zsh) is your default shell or add SHELL:=/bin/bash to 2nd line of /usr/share/cross-gcc/template/rules.generic
+TARGET_LIST="armhf" cross-gcc-gensource 4.9
+cd cross-gcc-packages-amd64/cross-gcc-4.9-armhf
+sudo apt-get install debhelper gcc-4.9-source libc6-dev:armhf linux-libc-dev:armhf libgcc1:armhf binutils-arm-linux-gnueabihf bison flex libtool gdb sharutils netbase libcloog-isl-dev libmpc-dev libmpfr-dev libgmp-dev systemtap-sdt-dev autogen expect chrpath zlib1g-dev zip
+dpkg-buildpackage
+
+ACTION: Instalar prerequisitos opencv
+$ sudo apt-get install build-essential
+$ sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+$ sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+
+ACTION: Descargar opencv
+$ git clone https://github.com/Itseez/opencv.git
+$ cd opencv/platforms/linux/
+ACTION: Editar arm-gnueabi.toolchain.cmake y cambiar versión a 4.9
+
+ACTION: Compilar e instalar opencv
+$ mkdir -p build_hardfp
+$ cd build_hardfp
+$ cmake -DCMAKE_TOOLCHAIN_FILE=../arm-gnueabi.toolchain.cmake ../../..
+$ make
+$ sudo make install
+
+
+================================================================
+			Drivers Nvidia
+================================================================
 ACTION: Instalar detector de GPU
 # aptitude install nvidia-detect
 # nvidia-detect
