@@ -7,62 +7,19 @@ ACTION: instalar sudo
 #visudo 
 ACTION: Agregar user_name   ALL=(ALL:ALL) ALL
 
-===============================================================
- 		Actualizar Repositorios
-===============================================================
-
-ACTION: Añadir a /etc/apt/sources.list
-
-# jessie-oficiales
-deb http://mirrors.kernel.org/debian/ jessie main contrib non-free
-deb-src http://mirrors.kernel.org/debian/ jessie main contrib non-free
-
-# jessie-actualizaciones-sistema
-deb http://mirrors.kernel.org/debian/ jessie-updates main contrib non-free
-deb-src http://mirrors.kernel.org/debian/ jessie-updates main contrib non-free
-deb http://mirrors.kernel.org/debian jessie-proposed-updates main contrib non-free
-deb-src http://mirrors.kernel.org/debian jessie-proposed-updates main contrib non-free
-
-# jessie-backports
-deb http://mirrors.kernel.org/debian/ jessie-backports main contrib non-free
-deb-src http://mirrors.kernel.org/debian/ jessie-backports main contrib non-free
-
-# deb-multimedia
-# apt-get install deb-multimedia-keyring
-deb http://www.deb-multimedia.org jessie main non-free
-
-ACTION: Actualizar lista de repositorios
-# apt-get update
-
-ACTION: Actualizar llaves
-# apt-get install deb-multimedia-keyring
-
-ACTION: Actualizar lista de repositorios
-# apt-get update
-
 ================================================================
 			Kernel headers
 ================================================================
+sudo apt-get install aptitude
 ACTION: Instalar headers del kernel
 # aptitude -r install linux-headers-$(uname -r|sed 's,[^-]*-[^-]*-,,')
 
 ===============================================================
-		Cross-Opencv
+		Cross-Compilador
 ===============================================================
 
 ACTION: Instalar compilador
 $ sudo apt-get install build-essential 
-
-ACTION: Agregar repositorio cross compilador
-$ cd /etc/apt/sources.list.d/
-$ ls -l
-$ sudo nano crosstools.list
-ACTION: Agregar 	
-	deb http://emdebian.org/tools/debian jessie main
-
-ACTION: Actualizar llaves
-$ sudo apt-get install curl
-$ curl http://emdebian.org/tools/debian/emdebian-toolchain-archive.key | sudo apt-key add -
 
 ACTION: Instalar cross-compilador
 $ sudo apt-get update 
@@ -79,6 +36,9 @@ cd cross-gcc-packages-amd64/cross-gcc-4.9-armhf
 sudo apt-get install debhelper gcc-4.9-source libc6-dev:armhf linux-libc-dev:armhf libgcc1:armhf binutils-arm-linux-gnueabihf bison flex libtool gdb sharutils netbase libcloog-isl-dev libmpc-dev libmpfr-dev libgmp-dev systemtap-sdt-dev autogen expect chrpath zlib1g-dev zip
 dpkg-buildpackage
 
+===============================================================
+		Opencv
+===============================================================
 ACTION: Instalar prerequisitos opencv
 $ sudo apt-get install build-essential
 $ sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
