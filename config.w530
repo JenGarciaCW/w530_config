@@ -1,4 +1,38 @@
-Debian: Jessie
+Debian: Stretch
+
+================================================================
+			Aptitude
+================================================================
+    #  apt-get update
+    #  apt-get install aptitude
+    #  aptitude update
+
+================================================================
+			Drivers Nvidia
+================================================================
+<https://wiki.debian.org/es/NvidiaGraphicsDrivers#Debian_9_.22Stretch.22>
+
+1. Add contrib non free to the first two mirrors in /etc/apt/sources.list
+    #  aptitude -r install linux-headers-$(uname -r|sed 's,[^-]*-[^-]*-,,') nvidia-driver
+    #  mkdir /etc/X11/xorg.conf.d
+    #  echo -e 'Section "Device"\n\tIdentifier "My GPU"\n\tDriver "nvidia"\nEndSection' > /etc/X11/xorg.conf.d/20-nvidia.conf
+    #  reboot 
+*If issues arrise - old Kernel version look at 
+# less /var/log/lightdm/lightdm.log
+# less /var/log/lightdm/x-0.log
+# less /var/log/Xorg.0.log
+# apt-get update
+# apt-get upgrade 
+# aptitude safe-upgrade 
+# reboot 
+
+================================================================
+			CUDA
+===============================================================
+<https://wiki.debian.org/es/NvidiaGraphicsDrivers#Debian_9_.22Stretch.22-1>
+# apt-get install nvidia-cuda-dev nvidia-cuda-toolkit  nvidia-driver
+
+
 ===============================================================
 		sudo
 ===============================================================
