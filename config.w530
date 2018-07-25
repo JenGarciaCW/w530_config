@@ -283,6 +283,18 @@ ROS
 ================================================================
 			Energia
 			
+			
+================================================================
+			mount permissions
+================================================================
+# nano /etc/polkit-1/localauthority/50-local.d/55-storage.pkla
+
+[Storage Permissions]
+Identity=unix-user:USER
+Action=org.freedesktop.udisks2.filesystem-mount;org.freedesktop.udisks2.filesystem-mount-system
+ResultAny=yes
+ResultInactive=yes
+ResultActive=yes
 
 
 
