@@ -1,5 +1,6 @@
 Debian: Stretch
-
+I found some issues when loading Nvidia drivers to the kernel... Fixed upgrading the kernel first
+#apt-get dist-upgrade
 ================================================================
 			Aptitude
 ================================================================
