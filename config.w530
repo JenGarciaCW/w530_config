@@ -1,6 +1,4 @@
 Debian: Stretch
-I found some issues when loading Nvidia drivers to the kernel... Fixed upgrading the kernel first
-#apt-get dist-upgrade
 ================================================================
 			Aptitude
 ================================================================
@@ -14,6 +12,10 @@ I found some issues when loading Nvidia drivers to the kernel... Fixed upgrading
 <https://wiki.debian.org/es/NvidiaGraphicsDrivers#Debian_9_.22Stretch.22>
 
 1. Add contrib non free to the first two mirrors in /etc/apt/sources.list
+    #  aptitude update
+    #  apt-get update
+    #  apt-get upgrade
+    #  apt-get dist-upgrade
     #  aptitude -r install linux-headers-$(uname -r|sed 's,[^-]*-[^-]*-,,') nvidia-driver
     #  mkdir /etc/X11/xorg.conf.d
     #  echo -e 'Section "Device"\n\tIdentifier "My GPU"\n\tDriver "nvidia"\nEndSection' > /etc/X11/xorg.conf.d/20-nvidia.conf
