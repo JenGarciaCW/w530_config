@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import subprocess
 import time
 import calendar
@@ -11,30 +13,10 @@ normal_background = '#121212'
 normal_color = '#FFFFFF'
 set_background = '#FFDE03'
 set_color = '#000000'
-warn_background = ''
-warn_color = ''
-danger_background = ''
-danger_color = ''
-
-example_dict = {
-    "full_text": "E: 10.0.0.1 (1000 Mbit/s)",
-    "short_text": "10.0.0.1",
-    "color": "#00ff00",
-    "background": "#1c1c1c",
-    "border": "#ee0000",
-    "border_top": 1,
-    "border_right": 0,
-    "border_bottom": 3,
-    "border_left": 1,
-    "min_width": 300,
-    "align": "right",
-    "urgent": False,
-    "name": "ethernet",
-    "instance": "eth0",
-    "separator": True,
-    "separator_block_width": 9,
-    "markup": None
-}
+warn_background = '#FF6F00'
+warn_color = '#000000'
+danger_background = '#B00020'
+danger_color = '#FAFAFA'
 
 def parse_sensors():
     sensors_lines = subprocess.check_output('sensors', shell=True).splitlines()
@@ -44,9 +26,9 @@ def parse_sensors():
             temp_regex = r'^\s*Physical.*:\s+\+(\d+.\d+).*\s+\(high\s+=\s+\+(\d+.\d+).*,\s+crit\s+=\s+\+?(\d+.\d+).*\)'
             result = re.match(temp_regex, line)
             if result:
-                sensors_dict['temp'] = result.group(1)
-                sensors_dict['high'] = result.group(2)
-                sensors_dict['crit'] = result.group(3)
+                sensors_dict['temp'] = int(float(result.group(1)))
+                sensors_dict['high'] = int(float(result.group(2)))
+                sensors_dict['crit'] = int(float(result.group(3)))
                 result.groups()
         elif 'fan' in line:
             fan_regex = r'fan\d+:\s+(\d+\s+RPM)'
@@ -107,15 +89,14 @@ def parse_hdd():
                     key = 'home'
                 else:
                     key = None
-
+                one_gig = 1024.0*1024.0
                 if key:
                     df_dict[key] = {
-                        "blocks": result.group(1),
-                        "used": result.group(2),
-                        "available": result.group(3),
+                        "blocks": round(int(result.group(1))/one_gig, 2),
+                        "used": round(int(result.group(2))/one_gig, 2),
+                        "available": round(int(result.group(3))/one_gig, 2),
                         "use": result.group(4)
                     }
-
 
     return df_dict               #sensors_dict['temp'] = result.group(1)
 
@@ -146,7 +127,7 @@ def get_caps_status(leds_dict):
     caps_status_dict = {
         "name": "caps",
         "full_text": " CAPS ",
-        "short_text": "CAPS",
+        "short_text": " CAPS ",
         "separator": True
     }
     # Check led array in string 1 is set 0 is unset
@@ -181,8 +162,6 @@ def get_scroll_status(leds_dict):
 
     return scroll_status_dict
 
-def get_fan_status():
-    pass
 
 def get_wifi_status():
     pass
@@ -220,14 +199,51 @@ def get_mem_status():
 }
     return mem_status_dict
 
-def get_hdd_status():
-    pass
 
-def get_cpu_load_status():
-    pass
+def get_hdd_status(in_dir, hdd_data):
+    data_dict = hdd_data[in_dir]
+    hdd_color = normal_color
+    hdd_back = normal_background
+    available_percentage = round(data_dict['available'] / data_dict['blocks'] * 100, 2)
+
+    if data_dict['available'] < 5 or available_percentage < 30:
+        hdd_color = warn_color
+        hdd_back = warn_background
+    elif data_dict['available'] < 3 or available_percentage < 10:
+        hdd_color = danger_color
+        hdd_back = danger_background
+
+    home_status_dict = {
+        "full_text": " /{} {}Gb {}% ".format(in_dir, data_dict['available'], available_percentage),
+        "short_text": "/{} {}Gb ".format(in_dir, data_dict['available']),
+        "color": hdd_color,
+        "background": hdd_back,
+        "name": "{}_hhd".format(in_dir),
+        "separator": True,
+    }
+    return home_status_dict
 
 def get_cpu_temp_status():
-    pass
+    sensors_data = parse_sensors()
+    temp_color = normal_color
+    temp_back = normal_background
+
+    if sensors_data['temp'] > sensors_data['high']:
+        temp_color = warn_color
+        temp_back = warn_background
+    if sensors_data['temp'] > sensors_data['crit']:
+        temp_color = danger_background
+        temp_back = danger_background
+    temp_status_dict = {
+        "full_text": " {}[C] {} ".format(sensors_data['temp'], sensors_data['fan']),
+        "short_text": " {}[C] ".format(sensors_data['temp']),
+        "color": temp_color,
+        "background": temp_back,
+        "name": "cpu_temp",
+        "separator": True,
+    }
+
+    return temp_status_dict
 
 def get_batt_status():
     bat_data = parse_bat()
@@ -254,8 +270,8 @@ def get_batt_status():
     seconds = int((time * 3600) % 60)
 
     bat_status_dict = {
-        "full_text": "%s %0.2f%c %02d:%02d:%02d" % (status, round(percentage, 2), '%', hours, minutes, seconds),
-        "short_text": "%s %d%c %02d:%02d" % (status[0], int(percentage), '%', hours, minutes),
+        "full_text": " %s %0.2f%c %02d:%02d:%02d " % (status, round(percentage, 2), '%', hours, minutes, seconds),
+        "short_text": " %s %d%c %02d:%02d " % (status[0], int(percentage), '%', hours, minutes),
         "color": bat_color,
         "background": bat_back,
         "name": "battery",
@@ -264,8 +280,8 @@ def get_batt_status():
     return bat_status_dict
 
 def get_date(now):
-    date = "{} {}, {}".format(calendar.month_abbr[now.month], now.day, now.year)
-    short_date = "{}/{}/{}".format(now.day, now.month, str(now.year)[2:])
+    date = " {} {}, {} ".format(calendar.month_abbr[now.month], now.day, now.year)
+    short_date = " {}/{}/{} ".format(now.day, now.month, str(now.year)[2:])
 
     date_dict = {
         "full_text": date,
@@ -278,10 +294,9 @@ def get_date(now):
 
     return date_dict
 
-
 def get_hour(now):
-    hour = now.strftime('%I:%M:%S %p')
-    short_hour = now.strftime('%H:%M')
+    hour = now.strftime(' %I:%M:%S %p ')
+    short_hour = now.strftime(' %H:%M ')
     hour_dict = {
         "full_text": hour,
         "short_text": short_hour,
@@ -295,22 +310,22 @@ def get_hour(now):
 
 
 def main():
-    sensors_data = parse_sensors()
     ethr_data = parse_ifconfig('enp0s25')
     wifi_data = parse_ifconfig('wlp3s0')
-    hdd_data = parse_hdd()
-    # print hdd_data
     # print get_mem_status()
     # print ethr_data
     # print wifi_data
-    # print sensors_data
     print '{ "version": 1 }'
     print '['
     print '[]'
     while True:
         now = datetime.now()
+        hdd_data = parse_hdd()
         status_list = list()
         status_list.append(get_caps_status(""))
+        status_list.append(get_hdd_status('home', hdd_data))
+        status_list.append(get_hdd_status('root', hdd_data))
+        status_list.append(get_cpu_temp_status())
         status_list.append(get_batt_status())
         status_list.append(get_date(now))
         status_list.append(get_hour(now))
