@@ -1,4 +1,4 @@
-Debian: Stretch
+Debian: 10+
 ================================================================
 			Aptitude
 ================================================================
@@ -317,9 +317,105 @@ sudo apt-get install feh
 exec_always feh --bg-scale <path to background>
 exec_always xcompmgr &
 
-# in .bashrc - to enable 75% transparency
+# in .bashrc - to enable 75% transparency  185  ls -la
+
 if [ "${DESKTOP_SESSION}" == "i3" ]; then
   transset -a --dec 0.25 &> /dev/null # default value is 1, with --dec 0.25 it stays at 0.75
 fi
+
+================================================================
+			go install
+================================================================
+wget https://dl.google.com/go/go1.14.3.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.14.3.linux-amd64.tar.gz 
+# Add to /etc/profile file
+# export PATH=$PATH:/usr/local/go/bin
+
+mkdir go
+cd go/
+go get -u github.com/nsf/gocode
+
+# Add following lines in .bashrc
+#   export GOPATH=$HOME/go
+# export PATH=$PATH:$GOPATH/bin
+
+================================================================
+			node config
+================================================================
+sudo tar -C /usr/local --strip-components=1 -xvf node-v12.17.0-linux-x64.tar.xz 
+
+
+================================================================
+			vim config
+================================================================
+#Vim building
+sudo apt-get install libncurses5-dev libncursesw5-dev
+sudo apt-get install python-dev python-pip
+sudo apt-get install cmake
+sudo apt-get install python3.7-dev 
+sudo apt-get install libx11-dev 
+sudo apt-get install libxt-dev
+sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libdc1394-22-dev
+
+
+git clone https://github.com/vim/vim.git
+cd vim/src/
+./configure --with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu --with-python3-config-dir=/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu --enable-pythoninterp --enable-python3interp --enable-gui=auto --enable-gtk2-check --enable-gnome-check --with-features=huge 
+make
+sudo make install
+
+# YCMe building
+npm install --save-dev stylelint stylelint-config-standard
+npm install eslint --save-dev
+cd .vim/bundle/YouCompleteMe/
+python3.7 install.py --clang-completer --all --clang-tidy --java-completer --go-completer
+sudo apt-get install linux-headers-amd64 linux-headers-4.19.0-6-amd64 
+
+#Taskwiki
+sudo apt-get install python-pip
+sudo apt-get install python3-pip
+sudo pip3 install --upgrade git+git://github.com/robgolding63/tasklib@develop
+
+# For C projects to work with ctags
+sudo apt-get install universal-ctags 
+sudo apt-get install exuberant-ctags 
+ctags -R .
+
+# For python syntax
+sudo apt-get install pylint pylint3 
+sudo apt-get install flake8
+
+# For java autocompletion
+sudo apt-get install openjdk-8-jre
+sudo apt-get install openjdk-11-jre
+sudo apt-get install maven
+
+# in .bashrc add following line to support mount VM in Java 11
+# export JDK_JAVA_OPTIONS="-Djdk.attach.allowAttachSelf=true"
+
+
+# in .vim/bundle/vim-javacomplete2/pom.xml add the dependency
++        <dependency>
++           <groupId>org.jacorb</groupId>
++           <artifactId>jacorb-omgapi</artifactId>
++           <version>3.8</version>
++        </dependency>
+$ mvn clean compile test
+
+# Add text to ~/.tern-config and ~/.tern-project
+{
+  "libs": [
+    "browser",
+    "ecmascript",
+    "jquery",
+    "react",
+    "underscore"
+  ],
+  "plugins": {
+    "node": {},
+    "esmodules": {}
+  }
+}
 
 
